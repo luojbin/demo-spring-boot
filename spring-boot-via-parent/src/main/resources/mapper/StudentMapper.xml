@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.luojbin.demo.spring.boot.parent.dao.StudentDao">
+
+	<resultMap id="allResultMap" type="com.luojbin.demo.spring.boot.parent.model.Clazz">
+		<id property="id" column="classId" />
+		<result property="className" column="className" />
+		<result property="studentAmount" column="studentAmount" />
+		<collection property="studentList" ofType="com.luojbin.demo.spring.boot.parent.model.Student" >
+			<id property="id" column="studentId"/>
+			<result property="classId" column="sclassId"/>
+			<result property="studentName" column="studentName"/>
+			<result property="age" column="studentAge"/>
+			<result property="address" column="studentAddress"/>
+			<collection property="scoreList" ofType="com.luojbin.demo.spring.boot.parent.model.Score" >
+				<id property="id" column="scoreId"/>
+				<result property="studentId" column="cstuId"/>
+				<result property="course" column="courseName"/>
+				<result property="score" column="courseScore"/>
+			</collection>
+		</collection>
+	</resultMap>
+
+	<insert id="saveStudent" parameterType="com.luojbin.demo.spring.boot.parent.model.Student">
+		insert into student (id, clazz_id, student_name, age, address)
+		values (#{id}, #{classId}, #{studentName}, #{age}, #{address})
+	</insert>
+	<select id="getAll" resultMap="allResultMap" >
+		select
+    	c.id as classId,
+    	c.class_name  as className,
+       c.student_amount as studentAmount,
+       s.id as studentId,
+       s.clazz_id as sclassId,
+       s.student_name as studentName,
+       s.age as studentAge,
+       s.address as studentAddress,
+       sc.id as scoreId,
+       sc.student_id as cstuId,
+       sc.course as courseName,
+       sc.score as courseScore
+		from clazz c, student s, score sc
+		where c.id = s.clazz_id and s.id = sc.student_id
+	</select>
+
+
+	<select id="getStudentById"
+			parameterType="string"
+			resultType="com.luojbin.demo.spring.boot.parent.model.Student">
+		select
+			*
+		from
+			student
+		where
+			id = #{id}
+	</select>
+	
+	
+</mapper>
+
+
+
+
+
+
+
