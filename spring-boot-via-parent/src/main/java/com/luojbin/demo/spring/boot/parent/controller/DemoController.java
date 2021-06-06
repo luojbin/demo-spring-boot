@@ -36,14 +36,6 @@ public class DemoController {
 
     @RequestMapping("world")
     public String helloWorld() {
-        log.info("成功获取到自定义属性值 key={}", myAppConstants.getKey());
-        log.info("成功获取到自定义属性值 value={}", myAppConstants.getValue());
-
-        Student s = service.getStudentById("1");
-        System.out.println(s);
-
-        List<Clazz> all = service.getAll();
-        all.forEach(System.out::println);
         return "hello world";
     }
 
