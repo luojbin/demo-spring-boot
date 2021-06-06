@@ -14,7 +14,6 @@ public class ApiCustomerController {
 
     @RequestMapping("get")
     public Map<String, Object> greet(String arg){
-        log.info("Customer 获取到请求，参数 {}", arg);
         Map<String, Object> result = new HashMap<>();
         result.put("msg", "customer, ok");
         return result;

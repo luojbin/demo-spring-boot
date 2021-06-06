@@ -14,7 +14,6 @@ public class ApiGatewayController {
 
     @RequestMapping("go")
     public Map<String, Object> greet(String arg){
-        log.info("gateway 获取到请求，参数 {}", arg);
         Map<String, Object> result = new HashMap<>();
         result.put("msg", "gateway, ok");
         return result;
