@@ -54,4 +54,14 @@ public class BootTest {
         logger.info("sssss");
         logger.info("sssss");
     }
+
+    @Test
+    public void testCOnfig() throws IOException {
+        Config config = new Config();
+        config.setCodec(new StringCodec());
+        config.useSingleServer()
+                .setAddress("redis://192.168.0.101:6379")
+                .setDatabase(1);
+        System.out.println(config.toYAML());
+    }
 }

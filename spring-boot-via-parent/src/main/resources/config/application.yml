@@ -9,13 +9,14 @@ mybatis:
 spring:
   datasource:
     data: testData.sql
-  redis:
-    redisson:
-      config: |
-        singleServerConfig:
-          address: "redis://192.168.0.101:6379"
-          database: 1
-        codec: !<org.redisson.client.codec.StringCodec> {}
+#  redis:
+#    redisson:
+#      file: classpath:config/redisson.yml
+##      config: |
+#        singleServerConfig:
+#          address: "redis://192.168.0.101:6379"
+#          database: 1
+#        codec: !<org.redisson.client.codec.StringCodec> {}
 
   # loyofo
 loyofo:
