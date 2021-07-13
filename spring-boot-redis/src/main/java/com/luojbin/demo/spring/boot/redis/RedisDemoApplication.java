@@ -3,6 +3,7 @@ package com.luojbin.demo.spring.boot.redis;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 /**
  * springboot 项目的启动入口, 要求放在项目根包下
@@ -17,6 +18,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 @MapperScan("com.luojbin.demo.spring.boot.redis.dao")
+@EnableCaching(proxyTargetClass = true)
 public class RedisDemoApplication {
 
     /**

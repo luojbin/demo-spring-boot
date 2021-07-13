@@ -5,13 +5,24 @@ server:
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.luojbin.demo.spring.boot.common.entity
-  # datasource
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo?useSSL=false
     username: luojbin
     password: 200305058
+  redis:
+    host: localhost
+    password:
+    port: 6379
+    database: 8
+  cache:
+    redis:
+      key-prefix: demo-student
+      time-to-live: 100
 
 
 
