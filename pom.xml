@@ -10,6 +10,8 @@
     <modules>
         <module>spring-boot-via-parent</module>
         <module>spring-boot-via-dependencies</module>
+        <module>spring-boot-redis</module>
+        <module>spring-boot-common</module>
     </modules>
     <packaging>pom</packaging>
 
