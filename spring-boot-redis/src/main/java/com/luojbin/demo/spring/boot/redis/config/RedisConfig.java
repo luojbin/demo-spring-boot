@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.*;
@@ -39,8 +40,12 @@ public class RedisConfig extends CachingConfigurerSupport {
     @Override
     public CacheManager cacheManager() {
         CacheProperties.Redis redisProperties = this.cacheProperties.getRedis();
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig().serializeValuesWith(
-                RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+        RedisCacheConfiguration config = RedisCacheConfiguration
+                .defaultCacheConfig()
+                .serializeValuesWith(
+                                RedisSerializationContext.SerializationPair
+                                        .fromSerializer(new GenericJackson2JsonRedisSerializer()));
+
         // 默认超时时间
         if (redisProperties.getTimeToLive() != null) {
             config = config.entryTtl(redisProperties.getTimeToLive());
@@ -55,9 +60,11 @@ public class RedisConfig extends CachingConfigurerSupport {
         }
         // key 前缀
         if (redisProperties.getKeyPrefix() != null) {
-            config = config.prefixCacheNameWith(redisProperties.getKeyPrefix());
+            config = config.computePrefixWith(name -> redisProperties.getKeyPrefix() + name + ":");
         }
-        return RedisCacheManager.builder(factory).cacheDefaults(config).build();
+
+        return new TtlRedisCacheManager(RedisCacheWriter.nonLockingRedisCacheWriter(factory), config);
+//        return TtlRedisCacheManager.builder(factory).cacheDefaults(config).build();
     }
 
     /**

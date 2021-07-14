@@ -97,7 +97,7 @@ public class StudentController {
      * 后续不需重复执行, 可以直接返回
      * @return
      */
-    @Cacheable("all")
+    @Cacheable(cacheNames = "all@PT10M")
     @RequestMapping("all")
     public List<Clazz> all() {
         List<Clazz> all = service.getAll();
