@@ -18,7 +18,6 @@ import org.springframework.cache.annotation.EnableCaching;
  */
 @SpringBootApplication
 @MapperScan("com.luojbin.demo.spring.boot.redis.dao")
-@EnableCaching(proxyTargetClass = true)
 public class RedisDemoApplication {
 
     /**

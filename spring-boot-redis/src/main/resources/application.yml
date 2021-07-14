@@ -8,10 +8,11 @@ mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo?useSSL=false
+    url: jdbc:mysql://localhost:3306/demo?useSSL=false&allowPublicKeyRetrieval=true
     username: luojbin
     password: 200305058
   redis:
@@ -20,10 +21,18 @@ spring:
     port: 6379
     database: 8
   cache:
+    type: redis
     redis:
-      key-prefix: demo-student
-      time-to-live: 100
+      # key 的前缀，会跟具体注解中的 cacheName 一起组成 key
+      key-prefix: "data-cache:"
+      # 全局缓存时间，可以指定单位，默认单位毫秒
+      time-to-live: 300s
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 
 

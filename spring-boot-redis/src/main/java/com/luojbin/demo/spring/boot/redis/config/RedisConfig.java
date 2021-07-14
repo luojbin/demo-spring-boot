@@ -3,70 +3,62 @@ package com.luojbin.demo.spring.boot.redis.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizers;
+import org.springframework.boot.autoconfigure.cache.CacheProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.data.redis.serializer.*;
 
 @EnableCaching
 @Configuration
+@EnableConfigurationProperties(CacheProperties.class)
 public class RedisConfig extends CachingConfigurerSupport {
-
+    @Autowired
+    private CacheProperties cacheProperties;
 
     @Autowired
     private RedisConnectionFactory factory;
 
-
-    @Override
-    @Bean
-    public KeyGenerator keyGenerator() {
-        return (o, method, objects) -> {
-            StringBuilder sb = new StringBuilder();
-            sb.append(o.getClass().getName()).append(".");
-            sb.append(method.getName()).append(".");
-            for (Object obj : objects) {
-                sb.append(obj.toString());
-            }
-            System.out.println("keyGenerator=" + sb.toString());
-            return sb.toString();
-        };
-    }
-
-    @Bean
-    @Override
-    public CacheResolver cacheResolver() {
-        return new SimpleCacheResolver(cacheManager());
-    }
-
-    @Bean
-    @Override
-    public CacheErrorHandler errorHandler() {
-        // 用于捕获从Cache中进行CRUD时的异常的回调处理器。
-        return new SimpleCacheErrorHandler();
-    }
-
+    /**
+     * 缓存管理器
+     */
     @Bean
     @Override
     public CacheManager cacheManager() {
-        RedisCacheConfiguration cacheConfiguration =
-                RedisCacheConfiguration.defaultCacheConfig()
-                        .disableCachingNullValues()
-                        .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
-        return RedisCacheManager.builder(factory).cacheDefaults(cacheConfiguration).build();
+        CacheProperties.Redis redisProperties = this.cacheProperties.getRedis();
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig().serializeValuesWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+        // 默认超时时间
+        if (redisProperties.getTimeToLive() != null) {
+            config = config.entryTtl(redisProperties.getTimeToLive());
+        }
+        // 是否缓存 null 值
+        if (!redisProperties.isCacheNullValues()) {
+            config = config.disableCachingNullValues();
+        }
+        // 是否使用 key 前缀
+        if (!redisProperties.isUseKeyPrefix()) {
+            config = config.disableKeyPrefix();
+        }
+        // key 前缀
+        if (redisProperties.getKeyPrefix() != null) {
+            config = config.prefixCacheNameWith(redisProperties.getKeyPrefix());
+        }
+        return RedisCacheManager.builder(factory).cacheDefaults(config).build();
     }
-
 
     /**
      * 默认配置 redisTemplate

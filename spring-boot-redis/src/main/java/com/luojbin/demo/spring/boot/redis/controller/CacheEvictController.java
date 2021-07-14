@@ -4,11 +4,10 @@ import com.luojbin.demo.spring.boot.common.entity.Clazz;
 import com.luojbin.demo.spring.boot.redis.service.StudentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,10 +19,10 @@ import java.util.List;
  * @version 1.0
  * @date 2019/7/30 17:05
  */
-@RequestMapping("/student")
+@RequestMapping("evict")
 @RestController
 @Slf4j
-public class StudentController {
+public class CacheEvictController {
 
     private StudentService service;
 
@@ -31,14 +30,8 @@ public class StudentController {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public StudentController(StudentService service) {
+    public CacheEvictController(StudentService service) {
         this.service = service;
-    }
-
-    @RequestMapping("world")
-    public String helloWorld() {
-        redisTemplate.boundValueOps("hello").set("world");
-        return "hello world";
     }
 
     /**
@@ -47,9 +40,9 @@ public class StudentController {
      * @return
      */
     @RequestMapping("empty")
-    @Cacheable(cacheNames = "empty")
+    @CacheEvict(cacheNames = "empty")
     public String empty() {
-        return "hello empty";
+        return "evict empty";
     }
 
     /**
@@ -59,9 +52,9 @@ public class StudentController {
      * @return
      */
     @RequestMapping("one")
-    @Cacheable(cacheNames = "one")
+    @CacheEvict(cacheNames = "one")
     public String one(String id) {
-        return "hello one";
+        return "evict one";
     }
 
     /**
@@ -73,9 +66,9 @@ public class StudentController {
      * @return
      */
     @RequestMapping("multi")
-    @Cacheable(cacheNames = "multi")
+    @CacheEvict(cacheNames = "multi")
     public String multi(String one, String two, String three) {
-        return "hello multi";
+        return "evict multi";
     }
     /**
      * 多参数时, 使用spring 表达式构造 key
@@ -86,9 +79,9 @@ public class StudentController {
      * @return
      */
     @RequestMapping("spel")
-    @Cacheable(cacheNames = "spel", key = "'one=' + #one + '&two=' + #two")
+    @CacheEvict(cacheNames = "spel", key = "'one=' + #one + '&two=' + #two")
     public String spel(String one, String two, String three) {
-        return "hello spel";
+        return "evict spel";
     }
 
     /**
@@ -97,12 +90,10 @@ public class StudentController {
      * 后续不需重复执行, 可以直接返回
      * @return
      */
-    @Cacheable("all")
     @RequestMapping("all")
-    public List<Clazz> all() {
-        List<Clazz> all = service.getAll();
-        all.forEach(System.out::println);
-        return all;
+    @CacheEvict("all")
+    public String all() {
+        return "evict all";
     }
 
 }
